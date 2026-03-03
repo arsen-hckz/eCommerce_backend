@@ -3,10 +3,10 @@ from .models import Cart,CartItem,Order,OrderItem
 from products.models import Product
 from products.serializers import ProductSerializer
 
-class CartItemSerialiszer(serializers.ModelSerializer):
+class CartItemSerializer(serializers.ModelSerializer):
 
     product = ProductSerializer(read_only = True)
-    product_id = serializers.PrimaryKeyRelatedField(queryset = product.objects.all(),source = "product",write_only = True)
+    product_id = serializers.PrimaryKeyRelatedField(queryset = Product.objects.all(),source = "product",write_only = True)
 
     subtotal = serializers.ReadOnlyField()
 
@@ -16,14 +16,14 @@ class CartItemSerialiszer(serializers.ModelSerializer):
 
 class CartSerializer(serializers.ModelSerializer):
 
-    items = CartItemSerialiszer(read_only = True)
+    items = CartItemSerializer(read_only = True)
     total = serializers.ReadOnlyField
 
     class Meta:
          model = Cart
          fields = ["id", "items", "total"]
 
-class OrderItemSerializer(serializers.ModelSerializer):
+class OrderSerializer(serializers.ModelSerializer):
     items = ProductSerializer(read_only = True)
     subtotal = serializers.ReadOnlyField()
     
@@ -32,7 +32,7 @@ class OrderItemSerializer(serializers.ModelSerializer):
         fields = ["id", "product", "quantity", "price", "subtotal"]
 
 class Order(serializers.ModelSerializer):
-    items = OrderItemSerializer(many = True , read_only = True)
+    items = OrderSerializer(many = True , read_only = True)
 
     class Meta:
         model = Order
