@@ -1,6 +1,8 @@
 from pathlib import Path
 from dotenv import load_dotenv
 import os
+import stripe 
+
 
 load_dotenv()
 
@@ -120,3 +122,10 @@ SIMPLE_JWT = {
 
 # CORS — allows React frontend to talk to this API
 CORS_ALLOW_ALL_ORIGINS = True  # we'll restrict this in production
+
+
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
+STRIPE_PUBLISHABLE_KEY =os.getenv("STRIPE_PUBLISHABLE_KEY")
+STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
+FRONTEND_URL = os.getenv("FRONTEND_URL")
+stripe.api_key = STRIPE_SECRET_KEY

@@ -1,7 +1,8 @@
 from django.urls import path
 from .views import (
     CartView, AddToCartView, RemoveFromCartView,
-    UpdateCartItemView, OrderListView, CreateOrderView, OrderDetailView
+    UpdateCartItemView, OrderListView, CreateOrderView,
+    OrderDetailView, CreateCheckOutSessionView,stripe_webhook
 )
 
 urlpatterns = [
@@ -12,4 +13,6 @@ urlpatterns = [
     path("", OrderListView.as_view(), name="order-list"),
     path("create/", CreateOrderView.as_view(), name="order-create"),
     path("<int:pk>/", OrderDetailView.as_view(), name="order-detail"),
+    path("<int:order_id>/checkout/", CreateCheckOutSessionView.as_view()),
+    path("webhook/", stripe_webhook, name="stripe-webhook"),
 ]
