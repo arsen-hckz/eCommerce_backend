@@ -17,7 +17,7 @@ class CartView(APIView):
 
     def get(self, request):
         cart, _ = Cart.objects.get_or_create(user=request.user)
-        serializer = CartSerializer(cart)
+        serializer = CartSerializer(cart,context = {"request":request})
         return Response(serializer.data)
 
 
@@ -101,7 +101,7 @@ class CreateOrderView(APIView):
         order = Order.objects.create(
             user=request.user,
             total_price=cart.total,
-            shipping_address=serializer.validated_data["shipping_address"]
+            shipping_address=serializer.validated_data["shipping_address",""]
         )
 
         # create order items from cart items

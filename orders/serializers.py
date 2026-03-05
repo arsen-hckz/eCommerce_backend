@@ -16,8 +16,8 @@ class CartItemSerializer(serializers.ModelSerializer):
 
 class CartSerializer(serializers.ModelSerializer):
 
-    items = CartItemSerializer(read_only = True)
-    total = serializers.ReadOnlyField
+    items = CartItemSerializer(read_only = True,many =True)
+    total = serializers.ReadOnlyField()
 
     class Meta:
          model = Cart
@@ -44,3 +44,6 @@ class CreateOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = ["shipping_address"]
+        extra_kwargs = {
+            "shipping_address": {"required": False}
+         }
