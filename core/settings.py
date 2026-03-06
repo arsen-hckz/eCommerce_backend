@@ -22,7 +22,7 @@ DJANGO_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
-    "django.contrib.staticfiles",
+    ,
 ]
 
 THIRD_PARTY_APPS = [
@@ -41,7 +41,7 @@ LOCAL_APPS = [
     "reviews",
 ]
 
-INSTALLED_APPS = THIRD_PARTY_APPS + DJANGO_APPS +  LOCAL_APPS
+INSTALLED_APPS = DJANGO_APPS + ["django.contrib.staticfiles"] + THIRD_PARTY_APPS + LOCAL_APPS
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",  # must be first
