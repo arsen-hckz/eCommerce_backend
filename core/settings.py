@@ -22,16 +22,19 @@ DJANGO_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
-    ,
+    "cloudinary_storage",
+    "cloudinary",
+    "django.contrib.staticfiles",
 ]
+    
+
 
 THIRD_PARTY_APPS = [
     "rest_framework",
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",
     "corsheaders",
-    "cloudinary",
-    "cloudinary_storage",
+    
 ]
 
 LOCAL_APPS = [
@@ -41,7 +44,7 @@ LOCAL_APPS = [
     "reviews",
 ]
 
-INSTALLED_APPS = DJANGO_APPS + ["django.contrib.staticfiles"] + THIRD_PARTY_APPS + LOCAL_APPS
+INSTALLED_APPS = DJANGO_APPS  + THIRD_PARTY_APPS + LOCAL_APPS
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",  # must be first
