@@ -3,6 +3,8 @@ from dotenv import load_dotenv
 import os
 import stripe 
 import dj_database_url
+import sys
+
 
 
 load_dotenv()
@@ -91,7 +93,7 @@ else:
             "PORT": os.getenv("DB_PORT"),
         }
     }
-
+print("DATABASE_URL:", os.getenv("DATABASE_URL"), file=sys.stderr)
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
