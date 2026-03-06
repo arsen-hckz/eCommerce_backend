@@ -6,7 +6,7 @@ import dj_database_url
 import sys
 
 
-
+xo = 0
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
