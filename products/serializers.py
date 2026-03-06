@@ -23,11 +23,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
     def get_image(self, obj):
         if obj.image:
-            request = self.context.get("request")
-            if request:
-                url = request.build_absolute_uri(obj.image.url)
-                return url.replace("http://", "https://")
-            return f"https://ecommercebackend-production-33b6.up.railway.app{obj.image.url}"
+         return obj.image.url
         return None
 
 class ProductCreateSerializer(serializers.ModelSerializer):
