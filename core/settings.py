@@ -13,7 +13,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = os.getenv("DEBUG", "True") == "True"
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
 
 DJANGO_APPS = [
     "django.contrib.admin",
@@ -71,7 +71,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "core.wsgi.application"
 
-import dj_database_url
+
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 
@@ -93,7 +93,7 @@ else:
             "PORT": os.getenv("DB_PORT"),
         }
     }
-print("DATABASE_URL:", os.getenv("DATABASE_URL"), file=sys.stderr)
+
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
