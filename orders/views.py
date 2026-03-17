@@ -45,7 +45,7 @@ class AddToCartView(APIView):
             cart_item.quantity = quantity
         cart_item.save()
 
-        return Response(CartSerializer(cart).data)
+        return Response(CartSerializer(cart, context={"request": request}).data)
 
 
 class RemoveFromCartView(APIView):
@@ -136,20 +136,21 @@ class OrderDetailView(generics.RetrieveAPIView):
 
 
 class CreateCheckOutSessionView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request,order_id):
         try:
             order = Order.objects.get(id=order_id, user = request.user)
         except Order.DoesNotExist:
-            return HttpResponse({"message":"order doesnt exist"},status = 404)
+            return Response({"message":"order doesnt exist"}, status=404)
         if order.payment_status == "paid":
-            return HttpResponse({"message":"order is already paid"})
+            return Response({"message":"order is already paid"})
         
         line_items = []
         for item in order.items.all():
             line_items.append(
                 {"price_data":{
-                    "currency":"USD",
+                    "currency":"usd",
                     "product_data":{
                         "name":item.product.name,
                     },
@@ -159,15 +160,18 @@ class CreateCheckOutSessionView(APIView):
                 }
             )
 
-        session = stripe.checkout.Session.create(
-             payment_method_types = ["card"],
-             line_items=line_items,
-             mode = "payment",
-             success_url=f"{settings.FRONTEND_URL}/orders/{order.id}?payment=success",
-             cancel_url=f"{settings.FRONTEND_URL}/orders/{order.id}?payment=cancelled",
-             metadata={"order_id":order.id}
+        try:
+            session = stripe.checkout.Session.create(
+                payment_method_types=["card"],
+                line_items=line_items,
+                mode="payment",
+                success_url=f"{settings.FRONTEND_URL}/orders/{order.id}?payment=success",
+                cancel_url=f"{settings.FRONTEND_URL}/orders/{order.id}?payment=cancelled",
+                metadata={"order_id": str(order.id)}
             )
-             
+        except stripe.error.StripeError as e:
+            return Response({"error": str(e)}, status=400)
+
         order.stripe_session_id = session.id
         order.save()
         return Response({"checkout_url":session.url})
