@@ -151,12 +151,7 @@ FRONTEND_URL = os.getenv("FRONTEND_URL")
 stripe.api_key = STRIPE_SECRET_KEY
 
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    "https://ecommercefrontend-eight-gilt.vercel.app",
-]
-
+CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
