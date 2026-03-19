@@ -4,6 +4,9 @@ from rest_framework import generics, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from .serializers import RegisterSerializer, UserSerializer
 import threading
@@ -17,7 +20,7 @@ User = get_user_model()
 def send_verification_email(to_email, verify_url):
     def _send():
         try:
-            requests.post(
+            res = requests.post(
                 "https://api.sendgrid.com/v3/mail/send",
                 headers={
                     "Authorization": f"Bearer {os.getenv('SENDGRID_API_KEY')}",
@@ -31,10 +34,23 @@ def send_verification_email(to_email, verify_url):
                 },
                 timeout=10,
             )
+            print(f"SendGrid response: {res.status_code} {res.text}")
         except Exception as e:
             print(f"Email send failed: {e}")
 
     threading.Thread(target=_send, daemon=True).start()
+
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        if not self.user.is_verified:
+            raise serializers.ValidationError({"error": "Please verify your email before logging in."})
+        return data
+
+
+class CustomLoginView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
 
 
 class RegisterView(generics.CreateAPIView):
