@@ -26,13 +26,16 @@ class RegisterView(generics.CreateAPIView):
         token = str(user.verification_token)
         verify_url = request.build_absolute_uri(f"/api/users/verify-email/?token={token}")
 
-        send_mail(
-            subject="Verify your ShopApp account",
-            message=f"Click the link below to verify your account:\n\n{verify_url}",
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[user.email],
-            fail_silently=False,
-        )
+        try:
+            send_mail(
+                subject="Verify your ShopApp account",
+                message=f"Click the link below to verify your account:\n\n{verify_url}",
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[user.email],
+                fail_silently=False,
+            )
+        except Exception as e:
+            print(f"Email send failed: {e}")
 
         return Response(
             {"message": "Registration successful. Please check your email to verify your account."},
@@ -68,13 +71,16 @@ class ResendVerificationView(APIView):
             token = str(user.verification_token)
             verify_url = request.build_absolute_uri(f"/api/users/verify-email/?token={token}")
 
-            send_mail(
-                subject="Verify your ShopApp account",
-                message=f"Click the link below to verify your account:\n\n{verify_url}",
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[user.email],
-                fail_silently=False,
-            )
+            try:
+                send_mail(
+                    subject="Verify your ShopApp account",
+                    message=f"Click the link below to verify your account:\n\n{verify_url}",
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[user.email],
+                    fail_silently=False,
+                )
+            except Exception as e:
+                print(f"Email send failed: {e}")
             return Response({"message": "Verification email sent."}, status=200)
         except User.DoesNotExist:
             return Response({"error": "No account found with that email."}, status=404)
