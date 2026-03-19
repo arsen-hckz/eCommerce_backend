@@ -1,0 +1,16 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+<h1>Add Stock to {{ product.name }}</h1>
+<p>Current stock: <strong>{{ product.stock }}</strong></p>
+
+<form method="post">
+    {% csrf_token %}
+    <div class="form-row">
+        <label for="amount">Amount to add:</label>
+        <input type="number" name="amount" id="amount" min="1" value="1" required>
+    </div>
+    <br>
+    <input type="submit" value="Add Stock" class="default">
+    <a href="{% url 'admin:products_product_changelist' %}" class="button cancel-link">Cancel</a>
+</form>
+{% endblock %}
