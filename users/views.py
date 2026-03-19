@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import get_user_model
-from .serializers import RegisterSerializer, UserSerializer
+import threading
 import os
 
 
@@ -26,16 +26,19 @@ class RegisterView(generics.CreateAPIView):
         token = str(user.verification_token)
         verify_url = request.build_absolute_uri(f"/api/users/verify-email/?token={token}")
 
-        try:
-            send_mail(
-                subject="Verify your ShopApp account",
-                message=f"Click the link below to verify your account:\n\n{verify_url}",
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[user.email],
-                fail_silently=False,
-            )
-        except Exception as e:
-            print(f"Email send failed: {e}")
+        def send_verification_email():
+            try:
+                send_mail(
+                    subject="Verify your ShopApp account",
+                    message=f"Click the link below to verify your account:\n\n{verify_url}",
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[user.email],
+                    fail_silently=False,
+                )
+            except Exception as e:
+                print(f"Email send failed: {e}")
+
+        threading.Thread(target=send_verification_email, daemon=True).start()
 
         return Response(
             {"message": "Registration successful. Please check your email to verify your account."},
@@ -71,16 +74,19 @@ class ResendVerificationView(APIView):
             token = str(user.verification_token)
             verify_url = request.build_absolute_uri(f"/api/users/verify-email/?token={token}")
 
-            try:
-                send_mail(
-                    subject="Verify your ShopApp account",
-                    message=f"Click the link below to verify your account:\n\n{verify_url}",
-                    from_email=settings.DEFAULT_FROM_EMAIL,
-                    recipient_list=[user.email],
-                    fail_silently=False,
-                )
-            except Exception as e:
-                print(f"Email send failed: {e}")
+            def send_verification_email():
+                try:
+                    send_mail(
+                        subject="Verify your ShopApp account",
+                        message=f"Click the link below to verify your account:\n\n{verify_url}",
+                        from_email=settings.DEFAULT_FROM_EMAIL,
+                        recipient_list=[user.email],
+                        fail_silently=False,
+                    )
+                except Exception as e:
+                    print(f"Email send failed: {e}")
+
+            threading.Thread(target=send_verification_email, daemon=True).start()
             return Response({"message": "Verification email sent."}, status=200)
         except User.DoesNotExist:
             return Response({"error": "No account found with that email."}, status=404)
