@@ -155,7 +155,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://*.railway.app",
+    "http://68.183.69.101",
     "https://*.vercel.app",
 ]
 
