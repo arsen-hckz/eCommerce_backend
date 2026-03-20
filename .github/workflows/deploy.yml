@@ -9,8 +9,9 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Check key
+      - name: Deploy to server
         run: |
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" | wc -l
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" | head -1
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" | tail -1
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > key.pem
+          chmod 600 key.pem
+          ssh -i key.pem -o StrictHostKeyChecking=no root@68.183.69.101 "/var/www/eCommerce_backend/deploy.sh"
+          rm key.pem
