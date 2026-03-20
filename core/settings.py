@@ -154,6 +154,8 @@ stripe.api_key = STRIPE_SECRET_KEY
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
 CSRF_TRUSTED_ORIGINS = [
     "https://*.vercel.app",
     "http://68.183.69.101",

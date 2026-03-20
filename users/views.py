@@ -1,5 +1,6 @@
 from django.shortcuts import redirect
 from django.conf import settings
+from django.core.mail import send_mail
 from rest_framework import generics, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -10,7 +11,6 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from .serializers import RegisterSerializer, UserSerializer
 import threading
-import requests
 import os
 
 
@@ -20,21 +20,14 @@ User = get_user_model()
 def send_verification_email(to_email, verify_url):
     def _send():
         try:
-            res = requests.post(
-                "https://api.sendgrid.com/v3/mail/send",
-                headers={
-                    "Authorization": f"Bearer {os.getenv('SENDGRID_API_KEY')}",
-                    "Content-Type": "application/json",
-                },
-                json={
-                    "personalizations": [{"to": [{"email": to_email}]}],
-                    "from": {"email": os.getenv("GMAIL_USER")},
-                    "subject": "Verify your ShopApp account",
-                    "content": [{"type": "text/plain", "value": f"Click the link below to verify your account:\n\n{verify_url}"}],
-                },
-                timeout=10,
+            send_mail(
+                subject="Verify your ShopApp account",
+                message=f"Click the link below to verify your account:\n\n{verify_url}",
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[to_email],
+                fail_silently=False,
             )
-            print(f"SendGrid response: {res.status_code} {res.text}")
+            print(f"Verification email sent to {to_email}")
         except Exception as e:
             print(f"Email send failed: {e}")
 
@@ -64,7 +57,8 @@ class RegisterView(generics.CreateAPIView):
         user = serializer.save()
 
         token = str(user.verification_token)
-        verify_url = request.build_absolute_uri(f"/api/users/verify-email/?token={token}")
+        frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
+        verify_url = f"{frontend_url}/verify-email?token={token}"
         send_verification_email(user.email, verify_url)
 
         return Response(
@@ -76,14 +70,18 @@ class RegisterView(generics.CreateAPIView):
 class VerifyEmailView(APIView):
     permission_classes = [permissions.AllowAny]
 
-    def get(self, request):
-        token = request.query_params.get("token")
-        frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
+    def post(self, request):
+        token = request.data.get("token")
         try:
             user = User.objects.get(verification_token=token)
             user.is_verified = True
             user.save()
-            return redirect(frontend_url)
+            refresh = RefreshToken.for_user(user)
+            return Response({
+                "user": {"id": user.id, "email": user.email, "username": user.username},
+                "access": str(refresh.access_token),
+                "refresh": str(refresh),
+            })
         except User.DoesNotExist:
             return Response({"error": "Invalid or expired token."}, status=400)
 
@@ -99,7 +97,8 @@ class ResendVerificationView(APIView):
                 return Response({"message": "Account already verified."}, status=200)
 
             token = str(user.verification_token)
-            verify_url = request.build_absolute_uri(f"/api/users/verify-email/?token={token}")
+            frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
+            verify_url = f"{frontend_url}/verify-email?token={token}"
             send_verification_email(user.email, verify_url)
             return Response({"message": "Verification email sent."}, status=200)
         except User.DoesNotExist:
