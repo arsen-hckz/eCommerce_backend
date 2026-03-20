@@ -155,8 +155,10 @@ CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
-    "http://68.183.69.101",
     "https://*.vercel.app",
+    "http://68.183.69.101",
+    "https://api.arsenidis.dev",
+    "https://arsenidis.dev",
 ]
 
 CLOUDINARY_STORAGE = {
