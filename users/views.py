@@ -20,8 +20,6 @@ User = get_user_model()
 def send_verification_email(to_email, verify_url):
     def _send():
         try:
-            api_key = os.getenv('SENDGRID_API_KEY', '')
-            print(f"SendGrid key starts with: {api_key[:10]}... length: {len(api_key)}")
             res = requests.post(
                 "https://api.sendgrid.com/v3/mail/send",
                 headers={
