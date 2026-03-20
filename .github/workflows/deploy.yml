@@ -5,15 +5,12 @@ on:
     branches:
       - main
 
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    steps: 
-     - name: Deploy to server
-       uses: appleboy/ssh-action@master
-       with:
-         host: 68.183.69.101
-         username: root
-         key: ${{secrets.SSH_PRIVATE_KEY}}
-         script: /var/www/eCommerce_backend/deploy.sh
+    steps:
+      - name: Check key
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" | wc -l
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" | head -1
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" | tail -1
