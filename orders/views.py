@@ -209,6 +209,34 @@ def stripe_webhook(request):
 
     return HttpResponse(status=200)
 
+class VerifyPaymentView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, order_id):
+        try:
+            order = Order.objects.get(id=order_id, user=request.user)
+        except Order.DoesNotExist:
+            return Response({"error": "Order not found"}, status=404)
+
+        if order.payment_status == "paid":
+            return Response(OrderSerializer(order).data)
+
+        if not order.stripe_session_id:
+            return Response({"error": "No session found"}, status=400)
+
+        try:
+            session = stripe.checkout.Session.retrieve(order.stripe_session_id)
+        except stripe.error.StripeError as e:
+            return Response({"error": str(e)}, status=400)
+
+        if session.payment_status == "paid":
+            order.payment_status = "paid"
+            order.status = "processing"
+            order.save()
+
+        return Response(OrderSerializer(order).data)
+
+
 class UpdateOrderView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
