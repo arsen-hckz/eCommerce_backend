@@ -1,7 +1,7 @@
 from django.shortcuts import redirect
 from django.conf import settings
-from django.core.mail import send_mail
 from rest_framework import generics, permissions
+import requests
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -20,14 +20,20 @@ User = get_user_model()
 def send_verification_email(to_email, verify_url):
     def _send():
         try:
-            send_mail(
-                subject="Verify your ShopApp account",
-                message=f"Click the link below to verify your account:\n\n{verify_url}",
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[to_email],
-                fail_silently=False,
+            response = requests.post(
+                "https://api.sendgrid.com/v3/mail/send",
+                headers={
+                    "Authorization": f"Bearer {os.getenv('SENDGRID_API_KEY')}",
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "personalizations": [{"to": [{"email": to_email}]}],
+                    "from": {"email": os.getenv("SENDGRID_FROM_EMAIL")},
+                    "subject": "Verify your ShopApp account",
+                    "content": [{"type": "text/plain", "value": f"Click the link below to verify your account:\n\n{verify_url}"}],
+                },
             )
-            print(f"Verification email sent to {to_email}")
+            print(f"SendGrid response: {response.status_code}")
         except Exception as e:
             print(f"Email send failed: {e}")
 

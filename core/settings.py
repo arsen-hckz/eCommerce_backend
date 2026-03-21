@@ -169,13 +169,8 @@ CLOUDINARY_STORAGE = {
     "API_SECRET": os.getenv("CLOUDINARY_API_SECRET"),
 }
 
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = "smtp.gmail.com"
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.getenv("GMAIL_USER")
-EMAIL_HOST_PASSWORD = os.getenv("GMAIL_PASS")
-DEFAULT_FROM_EMAIL = os.getenv("GMAIL_USER")
+SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY")
+SENDGRID_FROM_EMAIL = os.getenv("SENDGRID_FROM_EMAIL")
 
 STORAGES = {
     "default": {
