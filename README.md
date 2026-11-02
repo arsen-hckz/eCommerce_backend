@@ -63,6 +63,7 @@ it). Variables read in `core/settings.py` and `users/views.py`:
 - Stripe: `STRIPE_SECRET_KEY`, `STRIPE_PUBLISHABLE_KEY`, `STRIPE_WEBHOOK_SECRET`
 - Cloudinary: `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`
 - SendGrid: `SENDGRID_API_KEY`, `SENDGRID_FROM_EMAIL`
+- Optional, for `python manage.py create_admin`: `ADMIN_EMAIL`, `ADMIN_USERNAME`, `ADMIN_PASSWORD`
 
 Image uploads go to Cloudinary, so they need the Cloudinary variables even
 locally. To test the webhook locally, use the Stripe CLI:
