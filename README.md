@@ -38,9 +38,7 @@ fallback when the customer returns.
 
 `docker-compose.yml` runs only the backing services for development
 (Postgres 15 and Redis 7); the Django app itself runs outside Docker.
-Deployment: a push to `main` triggers a GitHub Actions job that SSHes to a
-DigitalOcean droplet and runs a `deploy.sh` kept on the server (not in this
-repo).
+There is currently no live deployment.
 
 ## Running locally
 
